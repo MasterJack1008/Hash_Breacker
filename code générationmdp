@@ -1,0 +1,85 @@
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <openssl/evp.h>
+#include <openssl/crypto.h>
+// gcc name.c -o name.c -lcrypto -lssl
+// probleme génération hash
+void calculate_md5_hash(const char *input, char *output) {
+    EVP_MD_CTX *mdctx;
+    const EVP_MD *md;
+    unsigned int md_len;
+
+    OpenSSL_add_all_digests();
+
+    md = EVP_get_digestbyname("md5");
+    if (!md) {
+        fprintf(stderr, "Impossible d'initialiser MD5.\n");
+        exit(1);
+    }
+
+    mdctx = EVP_MD_CTX_new();
+    EVP_DigestInit_ex(mdctx, md, NULL);
+    EVP_DigestUpdate(mdctx, input, strlen(input));
+    EVP_DigestFinal_ex(mdctx, (unsigned char *)output, &md_len);
+    EVP_MD_CTX_free(mdctx);
+}
+
+int check_password(const char *password, const char *target_hash) {
+    char hash[33];
+    calculate_md5_hash(password, hash);
+
+    printf("Mot de passe généré : %s\n", password);
+    printf("Hashage généré : %s\n", hash);
+    //printf("hash cible : %s\n", target_hash);
+
+
+    if (strcmp(hash, target_hash) == 0) {
+        printf("Mot de passe trouvé : %s\n", password);
+        return 1;
+    }
+
+    return 0;
+}
+
+int generate_password_recursive(char *password, int length, const char *target_hash, int index) {
+    char alphabet[] = "abcdefghijklmnopqrstuvwxyz";
+
+    if (index == length) {
+        if (check_password(password, target_hash)) {
+            return 1;
+        }
+        return 0;
+    }
+
+    for (int i = 0; i < 26; i++) {
+        password[index] = alphabet[i];
+        if (generate_password_recursive(password, length, target_hash, index + 1)) {
+            return 1;
+        }
+        if (index == 0 && password[0] == 'z') {
+            return 0;
+        }
+    }
+
+    return 0;
+}
+
+int main() {
+    char target_hash[] = "21232f297a57a5a743894a0e4a801fc3"; // admin
+    int max_length = 5;
+
+    for (int length = 1; length <= max_length; length++) {
+        char password[length + 1];
+        memset(password, 0, sizeof(password)); // Initialize the password buffer with null characters
+
+        //printf("Testing passwords of length %d...\n", length); // a reactiver quand ca fonctionnera
+        if (generate_password_recursive(password, length, target_hash, 0)) {
+            printf("Mot de passe trouvé. \n");
+            return 0;
+        }
+    }
+
+    printf("Mot de passe non trouvé. \n");
+    return 0;
+}
