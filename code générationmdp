@@ -74,8 +74,8 @@ int generate_password_recursive(char *password, int length, const char *target_h
 
 
 int main() {
-    char target_hash[] = "ab587534e21cb139c362e073cb648fbc"; // akics
-    int max_length = 5;
+    char target_hash[] = "900150983cd24fb0d6963f7d28e17f72"; // abc
+    int max_length = 3;
 
     for (int length = 1; length <= max_length; length++) {
         char password[length + 1];
