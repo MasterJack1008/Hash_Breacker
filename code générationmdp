@@ -84,7 +84,7 @@ int main() {
         memset(password, 0, sizeof(password));
 
         if (generate_password_recursive(password, length, target_hash, 0)) {
-            printf("Mot de passe non trouvé !!! Have fun y'r the boss now. \n");
+            printf("Mot de passe trouvé !!! Have fun y'r the boss now. \n");
             return 0;
         }
     }
