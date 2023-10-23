@@ -76,19 +76,18 @@ int generate_password_recursive(char *password, int length, const char *target_h
 }
 
 int main() {
-    char target_hash[] = "900150983cd24fb0d6963f7d28e17f72";
-    int max_length = 4;
+    char target_hash[] = "88eeef692947b682d3affe70320de288";
+    int max_length = 20;
 
     for (int length = 1; length <= max_length; length++) {
         char password[length + 1];
         memset(password, 0, sizeof(password));
 
         if (generate_password_recursive(password, length, target_hash, 0)) {
-            printf("Mot de passe trouvé. \n");
+            printf("Mot de passe trouvé !!! Have fun y'r the boss now. \n");
             return 0;
         }
     }
 
-    printf("Mot de passe non trouvé. \n");
     return 0;
 }
